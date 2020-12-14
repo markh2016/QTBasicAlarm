@@ -27,6 +27,7 @@ Alarm::Alarm(QWidget *parent)
     connect(ui->btnEnableAlarm,&QPushButton::clicked,this,&Alarm::setAlarmStatus);
     connect(ui->btnStopAlarm,&QPushButton::clicked,this,&Alarm::on_btnStopAlarm_clicked);
 
+
     QTime time = QTime::currentTime();
     QString text = time.toString("hh:mm");
 
@@ -36,7 +37,10 @@ Alarm::Alarm(QWidget *parent)
     text2 = alarmtime.toString("hh:mm");
 
     ui->alarmLCD->display(text2);
+    m_thread = new mThread(this);
 
+    // connect the thread
+    connect(m_thread, &mThread::AlarmFired,this,&Alarm::soundAlarm) ;
 
 
     timer->start(1000);
@@ -91,10 +95,15 @@ void Alarm:: updateAlarm()
 
  if((_now == alarm_time)&&(flag== true))
  {
-     QMessageBox *msgBox = new QMessageBox(0);
-     msgBox->setText("Alarm Fired ");
-     msgBox->exec();
-     flag = false ;
+
+
+
+
+    if(f_fired==false){
+    m_thread->start() ;
+    f_fired= true ;
+    }
+
 
  }
 
@@ -177,7 +186,7 @@ void Alarm::setAlarmStatus()
    {
 
 
-       QMessageBox *msgBox = new QMessageBox(0);
+       QMessageBox *msgBox = new QMessageBox(this);
        msgBox->setText("You havent set an alarm time ");
        msgBox->exec();
 
@@ -201,5 +210,12 @@ void Alarm::on_btnStopAlarm_clicked()
  ui->alarmLCD->display(alarm_time);
  flag =false ;
  isSetFlag =false ;
+ m_thread->stop= true ;
+ f_fired= false ;
 
+}
+
+void Alarm::soundAlarm(){
+
+    QSound::play(":/bells.wav");
 }

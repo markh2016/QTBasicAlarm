@@ -8,6 +8,9 @@
 #include <QDesktopWidget>
 #include <QDebug>
 #include <QScreen>
+#include "mthread.h"
+#include <QtMultimedia/QMediaPlayer>
+#include <QtMultimedia/QSound>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Alarm; }
@@ -29,6 +32,8 @@ public:
     QString hours ="00";
     bool flag = false;
     bool isSetFlag = false ;
+    mThread *m_thread ;
+    bool f_fired = false ;
 
 private slots:
     void showTime();
@@ -36,6 +41,7 @@ private slots:
     void setalarmtime();
     void setAlarmStatus();
     void on_btnStopAlarm_clicked();
+    void soundAlarm();
 
 private:
     Ui::Alarm *ui;
